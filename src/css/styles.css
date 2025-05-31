@@ -191,7 +191,9 @@ body {
   mask: radial-gradient(circle 5px, #0000 90%, #000);
   animation: l2 1.5s infinite linear;
 }
-
+.loader.is-hidden {
+  display: none;
+}
 @keyframes l2 {
   100% {
     transform: rotate(1turn);
