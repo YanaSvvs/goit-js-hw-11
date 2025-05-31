@@ -11,49 +11,50 @@ import { createGallery, clearGallery, showLoader, hideLoader } from './js/render
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
 
-hideLoader();
+hideLoader(); 
 
 searchForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const query = searchInput.value.trim();
+    event.preventDefault();
+    const query = searchInput.value.trim();
 
-    if (!query) {
-        iziToast.error({
-            title: 'Error',
-            message: 'Search query cannot be empty!',
-            position: 'topRight',
-            timeout: 3000,
-        });
-        return;
-    }
+    if (!query) {
+        iziToast.error({
+            title: 'Error',
+            message: 'Search query cannot be empty!',
+            position: 'topRight',
+            timeout: 3000,
+        });
+        return;
+    }
 
-    clearGallery();
-    showLoader();
+    clearGallery();
+    showLoader(); 
 
-    try {
-        const data = await getImagesByQuery(query);
-        hideLoader();
+    try {
+        const data = await getImagesByQuery(query);
+        
+        if (data.hits && data.hits.length > 0) {
+            createGallery(data.hits);
+        } else {
+            iziToast.info({
+                title: 'No Results',
+                message: 'Sorry, there are no images matching your search query. Please try again!',
+                position: 'topRight',
+                timeout: 5000,
+            });
+        }
+    } catch (error) {
+        console.error("Search failed:", error);
+        iziToast.error({
+            title: 'Error',
+            message: `Failed to fetch images: ${error.message || 'Unknown error'}. Please try again later.`,
+            position: 'topRight',
+            timeout: 5000,
+        });
+    } finally {
+        
+        hideLoader(); 
+    }
 
-        if (data.hits && data.hits.length > 0) {
-            createGallery(data.hits);
-        } else {
-            iziToast.info({
-                title: 'No Results',
-                message: 'Sorry, there are no images matching your search query. Please try again!',
-                position: 'topRight',
-                timeout: 5000,
-            });
-        }
-    } catch (error) {
-        hideLoader();
-        console.error("Search failed:", error);
-        iziToast.error({
-            title: 'Error',
-            message: `Failed to fetch images: ${error.message || 'Unknown error'}. Please try again later.`,
-            position: 'topRight',
-            timeout: 5000,
-        });
-    }
-
-    searchForm.reset();
+    searchForm.reset();
 });
